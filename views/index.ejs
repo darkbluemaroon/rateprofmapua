@@ -7,59 +7,123 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
-    <h1>Rate Mapúa Profs</h1>
-    <form action="/add-review" method="post">
-        <label for="profName">Professor's Name:</label>
-        <input type="text" id="profName" name="profName" required>
-        
-        <label for="courseName">Course Name:</label>
-        <input type="text" id="courseName" name="courseName" required>
-        
-        <label for="rating">Rating (1-10):</label>
-        <input type="number" id="rating" name="rating" min="1" max="10" required>
-        
-        <label for="department">Department:</label>
-        <select id="department" name="department" required>
-            <option value="cege">CEGE</option>
-            <option value="che-chm">CHE-CHM</option>
-            <option value="eece">EECE</option>
-            <option value="ie-emg">IE-EMG</option>
-            <option value="mas">MAS</option>
-            <option value="math">MATH</option>
-            <option value="mme">MME</option>
-            <option value="phy">PHY</option>
-            <option value="slhs">SLHS</option>
-            <option value="soit">SOIT</option>
-        </select>
-        
-        <label for="reviewMessage">Review Message:</label>
-        <textarea id="reviewMessage" name="reviewMessage" required></textarea>
-        
-        <button type="submit">Submit Review</button>
-    </form>
-    
-    <h2>Reviews</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Professor's Name</th>
-                <th>Course Name</th>
-                <th>Rating</th>
-                <th>Department</th>
-                <th>Review Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% reviews.forEach(review => { %>
-                <tr>
-                    <td><%= review.profName %></td>
-                    <td><%= review.courseName %></td>
-                    <td><%= review.rating %></td>
-                    <td><%= review.department %></td>
-                    <td><%= review.reviewMessage %></td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+    <header>
+        <h1>Rate Mapúa Profs</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <h2>Add a Review</h2>
+            <form action="/add-review" method="POST">
+                <label for="profName">Professor Name:</label>
+                <input type="text" id="profName" name="profName" required>
+
+                <label for="courseName">Course Name:</label>
+                <input type="text" id="courseName" name="courseName" required>
+
+                <label for="rating">Rating (1-10):</label>
+                <select id="rating" name="rating" required>
+                    <option value="" disabled selected>Select Rating</option>
+                    <% for (let i = 1; i <= 10; i++) { %>
+                        <option value="<%= i %>"><%= i %></option>
+                    <% } %>
+                </select>
+
+                <label for="department">Department:</label>
+                <select id="department" name="department" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="CEGE">CEGE</option>
+                    <option value="CHE-CHM">CHE-CHM</option>
+                    <option value="EECE">EECE</option>
+                    <option value="IE-EMG">IE-EMG</option>
+                    <option value="MAS">MAS</option>
+                    <option value="MATH">MATH</option>
+                    <option value="MME">MME</option>
+                    <option value="PHY">PHY</option>
+                    <option value="SOIT">SOIT</option>
+                </select>
+
+                <label for="reviewMessage">Review Message:</label>
+                <textarea id="reviewMessage" name="reviewMessage" rows="4" required></textarea>
+
+                <button type="submit">Submit Review</button>
+            </form>
+        </section>
+
+        <section class="reviews-section">
+            <h2>Professor Reviews</h2>
+            <div class="filters">
+                <label for="sort-profName">Sort by Name:</label>
+                <select id="sort-profName">
+                    <option value="asc">A-Z</option>
+                    <option value="desc">Z-A</option>
+                </select>
+
+                <label for="sort-courseName">Sort by Course:</label>
+                <select id="sort-courseName">
+                    <option value="asc">A-Z</option>
+                    <option value="desc">Z-A</option>
+                </select>
+
+                <label for="sort-department">Sort by Department:</label>
+                <select id="sort-department">
+                    <option value="">All</option>
+                    <option value="CEGE">CEGE</option>
+                    <option value="CHE-CHM">CHE-CHM</option>
+                    <option value="EECE">EECE</option>
+                    <option value="IE-EMG">IE-EMG</option>
+                    <option value="MAS">MAS</option>
+                    <option value="MATH">MATH</option>
+                    <option value="MME">MME</option>
+                    <option value="PHY">PHY</option>
+                    <option value="SOIT">SOIT</option>
+                </select>
+
+                <label for="sort-rating">Sort by Rating:</label>
+                <select id="sort-rating">
+                    <option value="desc">Highest to Lowest</option>
+                    <option value="asc">Lowest to Highest</option>
+                </select>
+            </div>
+
+            <table id="reviews-table">
+                <thead>
+                    <tr>
+                        <th>Professor Name</th>
+                        <th>Course Name</th>
+                        <th>Department</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reviews.forEach(review => { %>
+                        <tr class="review-row" data-id="<%= review._id %>">
+                            <td><%= review.profName %></td>
+                            <td><%= review.courseName %></td>
+                            <td><%= review.department %></td>
+                            <td>
+                                <div class="stars">
+                                    <% for (let i = 1; i <= 10; i++) { %>
+                                        <span class="<%= i <= review.rating ? 'filled' : '' %>">&#9733;</span>
+                                    <% } %>
+                                </div>
+                                <%= review.rating %>
+                            </td>
+                            <td><%= review.reviewMessage %></td>
+                            <td>
+                                <button class="remove-btn" data-id="<%= review._id %>">Remove</button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Rate Mapúa Profs</p>
+    </footer>
+
+    <script src="/scripts/main.js"></script>
 </body>
 </html>

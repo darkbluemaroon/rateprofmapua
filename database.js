@@ -24,9 +24,11 @@ const addReview = (profName, courseName, rating, department, reviewMessage) => {
     });
 };
 
-const getAllReviews = () => {
+const getAllReviews = (sortBy) => {
+    const validSortFields = ['profName', 'courseName', 'rating', 'department'];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : 'id';
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM reviews', (err, rows) => {
+        db.all(`SELECT * FROM reviews ORDER BY ${sortField}`, (err, rows) => {
             if (err) reject(err);
             else resolve(rows);
         });
